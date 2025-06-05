@@ -1,0 +1,9 @@
+[package]
+name = "terminal_job_manager"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+circular-buffer = "1.1.0"
+crossbeam-queue = "0.3.12"
+pretty-duration = "0.1.1"
