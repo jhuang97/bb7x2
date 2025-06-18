@@ -16,22 +16,24 @@ const PYENV_VIRTUALENV: Option<&'static str> = None; // likely not relevant unle
 const ENUMERATE_PY_PATH: &'static str = "/something/something/Code/Enumerate.py";
 
 fn main() {
-    let start_time = Instant::now();
     let task_ids = SegQueue::new();
     for i in 0..10 {
         task_ids.push(i);
     }
 
+    let start_time = Instant::now();
     let worker_group = WorkerGroup::new(N_WORKERS, task_ids);
 
     loop {
-        thread::sleep(REPORT_INTERVAL);
         if worker_group.is_done() {
+            worker_group.join_all();
             let duration_s = pretty_duration(&start_time.elapsed(), Some(COMPACT_OPTIONS));
             println!("All done, {duration_s}.");
+            io::stdout().flush().expect("failed to flush stdout");
             break;
         }
         worker_group.print_status();
+        thread::sleep(REPORT_INTERVAL);
     }
 }
 
@@ -43,7 +45,7 @@ const COMPACT_OPTIONS: PrettyDurationOptions = PrettyDurationOptions {
 
 struct Worker {
     id: usize,
-    thread: Option<thread::JoinHandle<()>>,
+    thread: thread::JoinHandle<()>,
     task_info: Arc<Mutex<TaskInfo>>,
 }
 
@@ -59,13 +61,13 @@ impl Worker {
                 }
                 None => {
                     let mut info_inner = info1.lock().unwrap();
-                    info_inner.kind = TaskKind::Done;
                     println!("Worker {id} finished. {}", info_inner.out_buf.back().unwrap_or(&"buffer empty".to_owned()));
+                    info_inner.kind = TaskKind::Done;
                     break;
                 }
             }
         });
-        Worker { id, thread: Some(thread), task_info }
+        Worker { id, thread, task_info }
     }
 }
 
@@ -111,6 +113,13 @@ impl WorkerGroup {
             }
         }
         true
+    }
+
+    /// joins all workers, one at a time. Probably should not call this unless all workers are confirmed to be finished by other means
+    fn join_all(self) {
+        for w in self.workers {
+            w.thread.join().expect("couldn't join thread");
+        }
     }
 }
 
