@@ -5,4 +5,5 @@ I will upload results as file attachments in releases.
 
 | Task range | # holdouts | Maximum Score TM | ~Sigma |
 | --- | --- | --- | --- |
-| 70xxxx | 798,304 | `1RB0LF_1RC1LE_0RD1RA_1RE1RG_0LA1LB_1LE1RG_0RC1RZ` | 10↑↑33.81 |
+| 70xxxx |   798,304 | `1RB0LF_1RC1LE_0RD1RA_1RE1RG_0LA1LB_1LE1RG_0RC1RZ` | 10↑↑33.81 |
+| 71xxxx | 1,100,790 | `1RB1RZ_1LC1RD_0LD0LC_1LE1RA_1LF0LE_1RF0RG_1RG0RD` | 10↑↑77.50 |
